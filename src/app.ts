@@ -5,8 +5,26 @@ import createHttpError from 'http-errors';
 import logger from 'morgan';
 import helmet from 'helmet';
 
+import mongoose from 'mongoose';
+
+import { config } from 'dotenv';
+
 import indexRouter from './routes/index';
 import { HttpException } from './types';
+
+config();
+
+// Database
+
+const mongoDB = process.env.MONGO_URI!;
+mongoose.connect(mongoDB, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+} as mongoose.ConnectOptions);
+
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // init express
 const app = express();
@@ -38,15 +56,13 @@ app.use((req, res, next) => {
 	next(createHttpError(404));
 });
 // error handler
-app.use(
-	(err: HttpException, req: Request, res: Response, next: NextFunction) => {
-		res.locals.message = res.locals.error =
-			req.app.get('env') === 'development' ? err : {};
+app.use((err: HttpException, req: Request, res: Response) => {
+	res.locals.message = res.locals.error =
+		req.app.get('env') === 'development' ? err : {};
 
-		// render error page
-		res.status(err.status || 500);
-		res.render('error');
-	}
-);
+	// render error page
+	res.status(err.status || 500);
+	res.render('error');
+});
 
 export { app };
