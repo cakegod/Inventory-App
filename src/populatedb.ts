@@ -2,8 +2,8 @@ import mongoose, { Mongoose } from 'mongoose';
 import async from 'async';
 import { ICategory, IProduct } from 'src/types';
 import { config } from 'dotenv';
-import ProductModel from './models/product';
-import CategoryModel from './models/category';
+import Product from './models/product';
+import Category from './models/category';
 
 config();
 
@@ -21,7 +21,7 @@ const products: IProduct[] = [];
 const categories: ICategory[] = [];
 
 const createProduct = (obj: IProduct, callback: mongoose.Callback) => {
-	const product = new ProductModel(obj);
+	const product = new Product(obj);
 	product.save(err => {
 		if (err) {
 			callback(err, null);
@@ -34,7 +34,7 @@ const createProduct = (obj: IProduct, callback: mongoose.Callback) => {
 };
 
 const createCategory = (obj: ICategory, callback: mongoose.Callback) => {
-	const category = new CategoryModel(obj);
+	const category = new Category(obj);
 	category.save(err => {
 		if (err) {
 			callback(err, null);
@@ -57,8 +57,8 @@ const populateProducts = (
 						name: 'productOne',
 						description: 'Some description...',
 						category: categories[0]._id!,
-						price: 999,
-						numberInStock: 999,
+						price: 4,
+						numberInStock: 5,
 					},
 					callback
 				);
@@ -69,8 +69,8 @@ const populateProducts = (
 						name: 'productTwo',
 						description: 'Some description...',
 						category: categories[0]._id!,
-						price: 999,
-						numberInStock: 999,
+						price: 3,
+						numberInStock: 3,
 					},
 					callback
 				);
@@ -81,8 +81,8 @@ const populateProducts = (
 						name: 'productThree',
 						description: 'Some description...',
 						category: categories[1]._id!,
-						price: 999,
-						numberInStock: 999,
+						price: 2,
+						numberInStock: 1,
 					},
 					callback
 				);
@@ -93,8 +93,8 @@ const populateProducts = (
 						name: 'productThree',
 						description: 'Some description...',
 						category: categories[2]._id!,
-						price: 999,
-						numberInStock: 999,
+						price: 8,
+						numberInStock: 7,
 					},
 					callback
 				);
