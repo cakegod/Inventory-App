@@ -5,7 +5,7 @@ import createHttpError from 'http-errors';
 import logger from 'morgan';
 import helmet from 'helmet';
 
-import { indexRouter } from '@routes/index';
+import indexRouter from './routes/index';
 import { HttpException } from './types';
 
 // init express
@@ -31,7 +31,7 @@ if (app.get('env') === 'production') {
 }
 
 // adds base routing
-app.use('/', indexRouter());
+app.use('/', indexRouter);
 
 // catch 404 and fwd
 app.use((req, res, next) => {
