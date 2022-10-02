@@ -1,22 +1,22 @@
 import { Schema, model, Types } from 'mongoose';
 import { IProduct } from 'src/types';
 
-const Product = new Schema<IProduct>({
+const ProductSchema = new Schema<IProduct>({
 	name: { type: String, required: true },
 	description: { type: String, required: true },
 	category: {
 		type: Schema.Types.ObjectId,
-		ref: 'CategoryModel',
+		ref: 'Category',
 		required: true,
 	},
 	price: { type: Number, required: true },
 	numberInStock: { type: Number, required: true },
 });
 
-Product.virtual('URL').get(function () {
+ProductSchema.virtual('url').get(function () {
 	return `/product/${this._id}`;
 });
 
-const ProductModel = model<IProduct>('products', Product);
+const Product = model<IProduct>('Product', ProductSchema);
 
-export default ProductModel;
+export default Product;
