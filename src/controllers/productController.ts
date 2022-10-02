@@ -4,7 +4,7 @@ import Product from '../models/product';
 import Category from '../models/category';
 
 const productController = {
-	index(req: Request, res: Response) {
+	displayHomepage(req: Request, res: Response) {
 		async.parallel(
 			{
 				productsCount(callback) {
@@ -52,9 +52,9 @@ const productController = {
 				}
 				if (results.product == null) {
 					// No results.
-					const err = new Error('Product not found');
-					err.status = 404;
-					return next(err);
+					const newError = new Error('Product not found');
+					newError.status = 404;
+					return next(newError);
 				}
 				// Successful, so render.
 				res.render('productDetails', {
