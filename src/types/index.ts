@@ -18,4 +18,8 @@ interface ICategory {
 	_id?: Types.ObjectId;
 }
 
-export { IProduct, ICategory };
+interface IError extends Error {
+	status?: number;
+}
+
+export { IProduct, ICategory, IError };
