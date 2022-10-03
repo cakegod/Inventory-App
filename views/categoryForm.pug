@@ -1,8 +1,9 @@
 extends layout
 
 block content
-    form(method='POST')
+    form(method='POST' action='')
         label(for='name') Name:
-        input(type='select' placeholder='Name' name='category' required='true')
+        input(type='select' placeholder='Name' name='name' required='true')
         label(for='description') Description:
-        input(type='select' placeholder='Description' name='category' required='true')
+        input(type='select' placeholder='Description' name='description' required='true')
+        button(type='submit') Submit
