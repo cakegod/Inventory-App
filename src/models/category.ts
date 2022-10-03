@@ -2,8 +2,8 @@ import { Schema, model } from 'mongoose';
 import { ICategory } from 'src/types';
 
 const CategorySchema = new Schema<ICategory>({
-	name: { type: String },
-	description: { type: String },
+	name: { type: String, required: true },
+	description: { type: String, required: true },
 });
 
 CategorySchema.virtual('url').get(function () {
