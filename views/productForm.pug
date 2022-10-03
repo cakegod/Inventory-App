@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    form(method='POST')
+        label(for='name') Name:
+        input(type='select' placeholder='Name' name='category' required='true')
+        label(for='description') Description:
+        input(type='select' placeholder='Description' name='category' required='true')
+        label(for='category') Category:
+        select(type='select' placeholder='Select a category' name='category' required='true')
+          for category in categories
+              option(value=category._id, selected=(category === category._id.toString() ? 'selected' : false) ) #{category.name}
+        label(for='price') Price:
+        input(type='number' placeholder='Price' name='price' required='true')
+        label(for='numberInStock') Number in Stock:
+        input(type='number' placeholder='Number in Stock' name='price' required='true')
+        button(type='submit') Submit
