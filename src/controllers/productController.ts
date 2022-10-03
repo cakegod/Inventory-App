@@ -2,6 +2,7 @@ import async from 'async';
 import { NextFunction, Request, Response } from 'express';
 import Product from '../models/product';
 import Category from '../models/category';
+import { IError } from '../types';
 
 const productController = {
 	displayHomepage(req: Request, res: Response) {
@@ -52,7 +53,7 @@ const productController = {
 				}
 				if (results.product == null) {
 					// No results.
-					const newError = new Error('Product not found');
+					const newError: IError = new Error('Product not found');
 					newError.status = 404;
 					return next(newError);
 				}
@@ -64,6 +65,24 @@ const productController = {
 			}
 		);
 	},
+
+	createGetProduct(req: Request, res: Response, next: NextFunction) {
+		Category.find({}, 'name').exec((err, categories) => {
+			if (err) {
+				return next(err);
+			}
+			// Successful, so render.
+			res.render('productForm', {
+				title: 'Create new Product',
+				categories,
+			});
+		});
+	},
+	deleteGetProduct() {},
+	deletePostProduct() {},
+	updateGetProduct() {},
+	updatePostProduct() {},
+	createPostProduct() {},
 };
 
 export default productController;
