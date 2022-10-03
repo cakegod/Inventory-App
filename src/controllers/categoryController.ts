@@ -1,5 +1,6 @@
 import async from 'async';
 import { NextFunction, Request, Response } from 'express';
+import { body } from 'express-validator';
 import Product from '../models/product';
 import Category from '../models/category';
 import { IError } from '../types';
@@ -47,17 +48,35 @@ const categoryController = {
 			}
 		);
 	},
-	updateGetCategory() {},
-	updatePostCategory() {},
+	updateGetCategory(req: Request, res: Response, next: NextFunction) {},
+	updatePostCategory(req: Request, res: Response, next: NextFunction) {},
 	createGetCategory(req: Request, res: Response, next: NextFunction) {
 		// Successful, so render.
 		res.render('categoryForm', {
 			title: 'Create new Category',
 		});
 	},
-	createPostCategory() {},
-	deleteGetCategory() {},
-	deletePostCategory() {},
+	createPostCategory: [
+		body('name').not().isEmpty().trim().escape(),
+		body('description').not().isEmpty().trim().escape(),
+		(req: Request, res: Response, next: NextFunction) => {
+			const category = new Category({
+				name: req.body.name,
+				description: req.body.description,
+			});
+			category.save(err => {
+				if (err) {
+					next(err);
+					return;
+				}
+				console.log(`New Category:${category}`);
+				res.redirect(category.url);
+			});
+		},
+	],
+
+	deleteGetCategory(req: Request, res: Response, next: NextFunction) {},
+	deletePostCategory(req: Request, res: Response, next: NextFunction) {},
 };
 
 export default categoryController;
