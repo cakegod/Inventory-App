@@ -1,7 +1,6 @@
-import { Schema, model, Types } from 'mongoose';
-import { IProduct } from 'src/types';
+import { Schema, model, InferSchemaType } from 'mongoose';
 
-const ProductSchema = new Schema<IProduct>({
+const ProductSchema = new Schema({
 	name: { type: String, required: true },
 	description: { type: String, required: true },
 	category: {
@@ -17,6 +16,8 @@ ProductSchema.virtual('url').get(function () {
 	return `/product/${this._id}`;
 });
 
-const Product = model<IProduct>('Product', ProductSchema);
+const Product = model('Product', ProductSchema);
 
-export default Product;
+type TProduct = InferSchemaType<typeof ProductSchema>;
+
+export { Product, TProduct };

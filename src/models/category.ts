@@ -1,7 +1,6 @@
-import { Schema, model } from 'mongoose';
-import { ICategory } from 'src/types';
+import { Schema, model, InferSchemaType } from 'mongoose';
 
-const CategorySchema = new Schema<ICategory>({
+const CategorySchema = new Schema({
 	name: { type: String, required: true },
 	description: { type: String, required: true },
 });
@@ -10,6 +9,8 @@ CategorySchema.virtual('url').get(function () {
 	return `/category/${this._id}`;
 });
 
-const Category = model<ICategory>('Category', CategorySchema);
+const Category = model('Category', CategorySchema);
 
-export default Category;
+type TCategory = InferSchemaType<typeof CategorySchema>;
+
+export { Category, TCategory };

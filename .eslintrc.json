@@ -3,7 +3,7 @@
 		"browser": true,
 		"es2021": true
 	},
-	"extends": ["airbnb-base", "airbnb-typescript/base","prettier"],
+	"extends": ["airbnb-base", "airbnb-typescript/base", "prettier"],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"ecmaVersion": "latest",
@@ -19,7 +19,9 @@
 		"quotes": ["error", "single", { "allowTemplateLiterals": true }],
 		"semi": ["error", "always"],
 		"no-undef": "off",
-		"react/jsx-filename-extension": [0, { "extensions": [".js", ".jsx"] }]
+		"react/jsx-filename-extension": [0, { "extensions": [".js", ".jsx"] }],
+		"no-underscore-dangle": "off",
+		"func-names": "off"
 	},
 
 	"settings": {

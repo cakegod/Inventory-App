@@ -1,8 +1,9 @@
 import async from 'async';
 import { NextFunction, Request, Response } from 'express';
 import { body } from 'express-validator';
-import Product from '../models/product';
-import Category from '../models/category';
+import { HydratedDocument } from 'mongoose';
+import { Product } from '../models/product';
+import { Category, TCategory } from '../models/category';
 import { IError } from '../types';
 
 const categoryController = {
@@ -60,7 +61,7 @@ const categoryController = {
 		body('name').not().isEmpty().trim().escape(),
 		body('description').not().isEmpty().trim().escape(),
 		(req: Request, res: Response, next: NextFunction) => {
-			const category = new Category({
+			const category: HydratedDocument<TCategory> = new Category({
 				name: req.body.name,
 				description: req.body.description,
 			});

@@ -1,7 +1,7 @@
 import async from 'async';
 import { NextFunction, Request, Response } from 'express';
-import Product from '../models/product';
-import Category from '../models/category';
+import { Product } from '../models/product';
+import { Category } from '../models/category';
 import { IError } from '../types';
 
 const productController = {
