@@ -4,6 +4,7 @@ import { body, validationResult } from 'express-validator';
 import { Product } from '../models/product';
 import { Category, TCategory } from '../models/category';
 import { IError } from '../types';
+import { CallbackError } from 'mongoose';
 
 const categoryController = {
 	displayCategoriesList(req: Request, res: Response, next: NextFunction) {
@@ -20,7 +21,7 @@ const categoryController = {
 				});
 			});
 	},
-	displayCategoryProducts(req: Request, res: Response, next: NextFunction) {
+	displayCategoryDetails(req: Request, res: Response, next: NextFunction) {
 		async.parallel(
 			{
 				category(callback) {
@@ -40,7 +41,7 @@ const categoryController = {
 					newError.status = 404;
 					return next(newError);
 				}
-				res.render('categoryProducts', {
+				res.render('categoryDetails', {
 					title: results.category.name,
 					category: results.category,
 					productList: results.categoryProducts,
@@ -96,7 +97,14 @@ const categoryController = {
 	],
 
 	deleteGetCategory(req: Request, res: Response, next: NextFunction) {},
-	deletePostCategory(req: Request, res: Response, next: NextFunction) {},
+	deletePostCategory(req: Request, res: Response, next: NextFunction) {
+		Category.findByIdAndRemove(req.params.id, (err: CallbackError) => {
+			if (err) {
+				return next(err);
+			}
+			res.redirect('/categories');
+		});
+	},
 };
 
 export default categoryController;

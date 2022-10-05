@@ -9,11 +9,11 @@ router.get('/', productController.displayHomepage);
 router.get('/products', productController.displayProductsList);
 router.get('/categories', categoryController.displayCategoriesList);
 
-// Delete product
-router
-	.route('/product/:id/delete')
-	.get(productController.deleteGetProduct)
-	.post(productController.deletePostProduct);
+// // Delete product
+// router
+// 	.route('/product/:id/delete')
+// 	.get(productController.deleteGetProduct)
+// 	.post(productController.deletePostProduct);
 
 // Update product
 router
@@ -27,14 +27,17 @@ router
 	.get(productController.createGetProduct)
 	.post(productController.createPostProduct);
 
-// Read product
-router.get('/product/:id', productController.displayProductDetails);
+// Read and delete product
+router
+	.route('/product/:id')
+	.get(productController.displayProductDetails)
+	.post(productController.deletePostProduct);
 
 // Delete category
-router
-	.route('/category/:id/delete')
-	.get(categoryController.deleteGetCategory)
-	.post(categoryController.deletePostCategory);
+// router
+// 	.route('/category/:id/delete')
+// 	.get(categoryController.deleteGetCategory)
+// 	.post(categoryController.deletePostCategory);
 
 // Update category
 router
@@ -48,7 +51,10 @@ router
 	.get(categoryController.createGetCategory)
 	.post(categoryController.createPostCategory);
 
-// Read category
-router.get('/category/:id', categoryController.displayCategoryProducts);
+// Read and delete category
+router
+	.route('/category/:id')
+	.get(categoryController.displayCategoryDetails)
+	.post(categoryController.deletePostCategory);
 
 export default router;

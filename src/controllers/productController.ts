@@ -4,6 +4,7 @@ import { body, validationResult } from 'express-validator';
 import { Product, TProduct } from '../models/product';
 import { Category } from '../models/category';
 import { IError } from '../types';
+import { CallbackError } from 'mongoose';
 
 const productController = {
 	displayHomepage(req: Request, res: Response) {
@@ -81,7 +82,14 @@ const productController = {
 		});
 	},
 	deleteGetProduct() {},
-	deletePostProduct() {},
+	deletePostProduct(req: Request, res: Response, next: NextFunction) {
+		Product.findByIdAndDelete(req.params.id, (err: CallbackError) => {
+			if (err) {
+				return next(err);
+			}
+			res.redirect('/products');
+		});
+	},
 	updateGetProduct() {},
 	updatePostProduct() {},
 	createPostProduct: [
