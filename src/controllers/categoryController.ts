@@ -1,7 +1,6 @@
 import async from 'async';
 import { NextFunction, Request, Response } from 'express';
-import { body } from 'express-validator';
-import { HydratedDocument } from 'mongoose';
+import { body, validationResult } from 'express-validator';
 import { Product } from '../models/product';
 import { Category, TCategory } from '../models/category';
 import { IError } from '../types';
@@ -54,14 +53,31 @@ const categoryController = {
 	createGetCategory(req: Request, res: Response, next: NextFunction) {
 		// Successful, so render.
 		res.render('categoryForm', {
-			title: 'Create new Category',
+			title: 'Create new category',
 		});
 	},
 	createPostCategory: [
-		body('name').not().isEmpty().trim().escape(),
-		body('description').not().isEmpty().trim().escape(),
+		body('name', 'Name must not be empty').not().isEmpty().trim().escape(),
+		body('description', 'Description must not be empty')
+			.not()
+			.isEmpty()
+			.trim()
+			.escape(),
 		(req: Request, res: Response, next: NextFunction) => {
-			const category: HydratedDocument<TCategory> = new Category({
+			// Handle errors from request
+			const errors = validationResult(req);
+
+			// There are errors, render form with errors
+			if (!errors.isEmpty()) {
+				res.render('categoryForm', {
+					title: 'Create new category',
+					category: req.body,
+					errors: errors.array(),
+				});
+				return;
+			}
+			// Data is valid, create new category with validated data
+			const category = new Category({
 				name: req.body.name,
 				description: req.body.description,
 			});
@@ -70,7 +86,10 @@ const categoryController = {
 					next(err);
 					return;
 				}
+
 				console.log(`New Category:${category}`);
+
+				// Success, redirect to the new category url
 				res.redirect(category.url);
 			});
 		},
