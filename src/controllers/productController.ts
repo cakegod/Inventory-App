@@ -1,10 +1,10 @@
 import async from 'async';
 import { NextFunction, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { Product, TProduct } from '../models/product';
+import { CallbackError } from 'mongoose';
+import { Product } from '../models/product';
 import { Category } from '../models/category';
 import { IError } from '../types';
-import { CallbackError } from 'mongoose';
 
 const productController = {
 	displayHomepage(req: Request, res: Response) {

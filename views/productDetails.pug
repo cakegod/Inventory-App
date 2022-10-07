@@ -2,12 +2,12 @@ extends layout
 
 block content 
   h2
-    a(href=product.category && product.category.url) #{product.category && product.category.name}
+    a(href=product.category && product.category.url) Category: #{product.category && product.category.name}
   div
     a(href=product.url)
     h3 #{product.name}
     p #{product.description}
     h4 #{product.price}€
     h5 There are #{product.numberInStock} items left.
-    form(method='POST')
-      button(type='submit') DELETE!
+  form(method='POST')
+    button(type='submit') DELETE!

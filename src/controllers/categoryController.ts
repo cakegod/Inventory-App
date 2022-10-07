@@ -49,8 +49,57 @@ const categoryController = {
 			}
 		);
 	},
-	updateGetCategory(req: Request, res: Response, next: NextFunction) {},
-	updatePostCategory(req: Request, res: Response, next: NextFunction) {},
+	updateGetCategory(req: Request, res: Response, next: NextFunction) {
+		Category.findById(req.params.id).exec((err, category) => {
+			if (err) {
+				return next(err);
+			}
+			res.render('categoryForm', {
+				title: `Update ${category.name}`,
+				category,
+			});
+		});
+	},
+	updatePostCategory: [
+		body('name', 'Name must not be empty').not().isEmpty().trim().escape(),
+		body('description', 'Description must not be empty')
+			.not()
+			.isEmpty()
+			.trim()
+			.escape(),
+		(req: Request, res: Response, next: NextFunction) => {
+			// Handle errors from request
+			const errors = validationResult(req);
+
+			// There are errors, render form with errors
+			if (!errors.isEmpty()) {
+				res.render('categoryForm', {
+					title: 'Create new category',
+					category: req.body,
+					errors: errors.array(),
+				});
+				return;
+			}
+			// Data is valid, find category and update
+			const category = new Category({
+				name: req.body.name,
+				description: req.body.description,
+				_id: req.params.id,
+			});
+			Category.findByIdAndUpdate(req.params.id, category, {}, err => {
+				if (err) {
+					next(err);
+					return;
+				}
+
+				console.log(`New Category:${category}`);
+
+				// Success, redirect to the new category url
+				res.redirect(category.url);
+			});
+		},
+	],
+
 	createGetCategory(req: Request, res: Response, next: NextFunction) {
 		// Successful, so render.
 		res.render('categoryForm', {

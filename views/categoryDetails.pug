@@ -11,5 +11,10 @@ block content
         h5 There are #{product.numberInStock} items left.
     else 
         li No products available
-    form(method='POST')
-      button(type='submit') DELETE!
+  form(method='POST')
+    button(type='submit') Delete category
+  button 
+    a(href=`${category.url}/update`) Edit category
+  
+    
+    
