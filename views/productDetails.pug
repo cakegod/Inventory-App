@@ -11,3 +11,5 @@ block content
     h5 There are #{product.numberInStock} items left.
   form(method='POST')
     button(type='submit') DELETE!
+  button 
+    a(href=`${product.url}/update`) Edit product

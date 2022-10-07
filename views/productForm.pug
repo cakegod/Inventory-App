@@ -8,8 +8,9 @@ block content
         input(type='select' placeholder='Description' name='description' required='true' value=(product && product.description))
         label(for='category') Category:
         select(type='select' placeholder='Select a category' name='category' required='true')
-          for category in categories
-              option(value=category._id, selected=(category === category._id.toString() ? 'selected' : false) ) #{category.name}
+            option(value="") Select a category
+            for category in categories
+                option(value=category._id, selected=(selectedCategory === category._id.toString() ? 'selected' : false) ) #{category.name}
         label(for='price') Price:
         input(type='number' placeholder='Price' name='price' required='true' value=(product && product.price))
         label(for='numberInStock') Number in Stock:

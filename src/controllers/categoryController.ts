@@ -100,7 +100,7 @@ const categoryController = {
 		},
 	],
 
-	createGetCategory(req: Request, res: Response, next: NextFunction) {
+	createGetCategory(req: Request, res: Response) {
 		// Successful, so render.
 		res.render('categoryForm', {
 			title: 'Create new category',
@@ -145,7 +145,6 @@ const categoryController = {
 		},
 	],
 
-	deleteGetCategory(req: Request, res: Response, next: NextFunction) {},
 	deletePostCategory(req: Request, res: Response, next: NextFunction) {
 		Category.findByIdAndRemove(req.params.id, (err: CallbackError) => {
 			if (err) {

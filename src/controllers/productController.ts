@@ -4,7 +4,6 @@ import { body, validationResult } from 'express-validator';
 import { CallbackError } from 'mongoose';
 import { Product } from '../models/product';
 import { Category } from '../models/category';
-import { IError } from '../types';
 
 const productController = {
 	displayHomepage(req: Request, res: Response) {
@@ -41,31 +40,17 @@ const productController = {
 			});
 	},
 	displayProductDetails(req: Request, res: Response, next: NextFunction) {
-		async.parallel(
-			{
-				product(callback) {
-					Product.findById(req.params.id)
-						.populate('category')
-						.exec(callback);
-				},
-			},
-			(err, results) => {
+		Product.findById(req.params.id)
+			.populate('category')
+			.exec((err, product) => {
 				if (err) {
 					return next(err);
 				}
-				if (results.product == null) {
-					// No results.
-					const newError: IError = new Error('Product not found');
-					newError.status = 404;
-					return next(newError);
-				}
-				// Successful, so render.
 				res.render('productDetails', {
-					title: results.product.name,
-					product: results.product,
+					title: product.name,
+					product,
 				});
-			}
-		);
+			});
 	},
 
 	createGetProduct(req: Request, res: Response, next: NextFunction) {
@@ -90,8 +75,96 @@ const productController = {
 			res.redirect('/products');
 		});
 	},
-	updateGetProduct() {},
-	updatePostProduct() {},
+	updateGetProduct(req: Request, res: Response, next: NextFunction) {
+		async.parallel(
+			{
+				product(callback) {
+					Product.findById(req.params.id, callback);
+				},
+				categories(callback) {
+					Category.find({}, callback);
+				},
+			},
+			(err, results) => {
+				res.render('productForm', {
+					title: 'Home',
+					error: err,
+					product: results.product,
+					selectedCategory: results.product.category.toString(),
+					categories: results.categories,
+				});
+			}
+		);
+	},
+	updatePostProduct: [
+		body('name', 'Name must not be empty').not().isEmpty().trim().escape(),
+		body('description', 'Description must not be empty')
+			.not()
+			.isEmpty()
+			.trim()
+			.escape(),
+		body('category', 'Category must not be empty')
+			.not()
+			.isEmpty()
+			.trim()
+			.escape(),
+		body('price', 'Price must not be empty')
+			.not()
+			.isEmpty()
+			.trim()
+			.escape()
+			.isNumeric(),
+		body('numberInStock', 'Number in stock must not be empty')
+			.not()
+			.isEmpty()
+			.trim()
+			.escape()
+			.isNumeric(),
+		(req: Request, res: Response, next: NextFunction) => {
+			// Handle errors from request
+			const errors = validationResult(req);
+
+			// There are errors, render form with errors
+			if (!errors.isEmpty()) {
+				Category.find({}, 'name').exec((err, categories) => {
+					if (err) {
+						return next(err);
+					}
+					// Successful, so render.
+					console.log(categories, req.body.category);
+					res.render('productForm', {
+						title: 'create new product',
+						product: req.body,
+						selectedCategory: req.body.category,
+						categories,
+						errors: errors.array(),
+					});
+				});
+				return;
+			}
+			// Data is valid, create new category with validated data
+
+			const product = new Product({
+				name: req.body.name,
+				description: req.body.description,
+				category: req.body.category,
+				price: req.body.price,
+				numberInStock: req.body.numberInStock,
+				_id: req.params.id,
+			});
+			Product.findByIdAndUpdate(req.params.id, product, {}, err => {
+				if (err) {
+					next(err);
+					return;
+				}
+
+				console.log(`New product:${product}`);
+
+				// Success, redirect to the new category url
+				res.redirect(product.url);
+			});
+		},
+	],
 	createPostProduct: [
 		body('name', 'Name must not be empty').not().isEmpty().trim().escape(),
 		body('description', 'Description must not be empty')
@@ -127,9 +200,11 @@ const productController = {
 						return next(err);
 					}
 					// Successful, so render.
+					console.log(categories, req.body.category);
 					res.render('productForm', {
 						title: 'create new product',
 						product: req.body,
+						selectedCategory: req.body.category,
 						categories,
 						errors: errors.array(),
 					});
@@ -137,6 +212,7 @@ const productController = {
 				return;
 			}
 			// Data is valid, create new category with validated data
+
 			const product = new Product({
 				name: req.body.name,
 				description: req.body.description,
