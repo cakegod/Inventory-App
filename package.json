@@ -4,7 +4,7 @@
 	"description": "A simple inventory app as an express-pug experiment",
 	"main": "dist/index.js",
 	"scripts": {
-		"start": "node ./dist/index.js",
+		"start": "ts-node -r tsconfig-paths/register dist/index.js",
 		"build": "rm -rf ./dist/* && tsc",
 		"start:dev": "nodemon dist/index.js --watch",
 		"build:dev": "tsc --watch --preserveWatchOutput",
@@ -31,7 +31,6 @@
 		"express-validator": "^7.0.1",
 		"helmet": "^7.0.0",
 		"http-errors": "~2.0.0",
-		"module-alias": "^2.2.3",
 		"mongoose": "^8.0.0",
 		"morgan": "~1.10.0",
 		"pug": "3.0.2"
@@ -75,7 +74,7 @@
 		"nodemon": "^3.0.1",
 		"prettier": "^3.0.3",
 		"ts-node": "^10.9.1",
-		"tsc-alias": "^1.8.8",
+		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.2.2"
 	}
 }

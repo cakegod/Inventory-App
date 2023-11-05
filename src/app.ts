@@ -1,30 +1,21 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import path from 'path';
 
 import createHttpError from 'http-errors';
 import logger from 'morgan';
 import helmet from 'helmet';
 
-import mongoose from 'mongoose';
-
 import { config } from 'dotenv';
 
 import indexRouter from './routes/index';
 import { HttpException } from './types';
+import db from './database';
 
 config();
 
 // Database
 
-const mongoDB = process.env.MONGO_URI!;
-mongoose.connect(mongoDB, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-} as mongoose.ConnectOptions);
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.connect(process.env.MONGO_URI!);
 
 // init express
 const app = express();
