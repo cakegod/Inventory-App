@@ -1,4 +1,4 @@
-import { Schema, model, InferSchemaType } from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 const CategorySchema = new Schema(
 	{
@@ -6,6 +6,7 @@ const CategorySchema = new Schema(
 		description: { type: String, required: true },
 	},
 	{
+		// Virtuals have to be directly added to be inferred by InferSchemaType
 		virtuals: {
 			url: {
 				get() {

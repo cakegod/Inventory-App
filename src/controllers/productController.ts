@@ -19,8 +19,6 @@ function validateProduct() {
 			.trim()
 			.custom(async value => {
 				const categories = await CategoryModel.find({});
-				console.log(categories);
-				console.log(value);
 				if (!categories.some(c => c._id.toString() === value)) {
 					throw new Error('Category does not exist');
 				}
@@ -43,19 +41,18 @@ function validateProduct() {
 	];
 }
 
-async function getAll(_: Request, res: Response) {
-	const productList = await ProductModel.find({})
+async function getAll(_req: Request, res: Response) {
+	const products = await ProductModel.find()
 		.sort({ title: 1 })
 		.populate('category');
 
-	res.json(productList);
+	res.json(products);
 }
 
 async function getOne(req: Request, res: Response) {
 	const product = await ProductModel.findById(req.params.id)
 		.sort({ title: 1 })
-		.populate('category')
-		.exec();
+		.populate('category');
 
 	if (!product) {
 		throw createHttpError.NotFound();
@@ -72,7 +69,7 @@ async function createOne(req: Request, res: Response) {
 }
 
 async function deleteOne(req: Request, res: Response) {
-	const product = await ProductModel.findByIdAndDelete(req.params.id).exec();
+	const product = await ProductModel.findByIdAndDelete(req.params.id);
 
 	if (!product) {
 		throw createHttpError.NotFound();
@@ -85,7 +82,7 @@ async function updateOne(req: Request, res: Response) {
 	const product = await ProductModel.findByIdAndUpdate(
 		req.params.id,
 		req.body,
-	).exec();
+	);
 
 	if (!product) {
 		throw createHttpError.NotFound();

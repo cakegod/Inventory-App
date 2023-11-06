@@ -2,6 +2,8 @@ import debug from 'debug';
 import http from 'http';
 import { app } from './app';
 
+const port: Number = +process.env.PORT! || 3000;
+const server = http.createServer(app);
 // error handler
 const onError = (error: NodeJS.ErrnoException) => {
 	if (error.syscall !== 'listen') throw error;
@@ -27,8 +29,6 @@ const onListening = () => {
 	debug(`Listening on ${bind}`);
 };
 
-const port: Number = +process.env.PORT! || 3000;
-const server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { ProductModel } from '@models/productModel';
 import { CategoryModel } from '@models/categoryModel';
 import productController from '@controllers/productController';
+import categoryController from '@controllers/categoryController';
 
 const router = Router();
 
@@ -55,15 +56,21 @@ router
 	);
 //
 
-// // Categories
-// router
-// 	.route('/products')
-// 	.get(categoryController.getAll)
-// 	.post(categoryController.createOne);
-// router
-// 	.route('/products/:id')
-// 	.get(categoryController.getOne)
-// 	.delete(categoryController.deleteOne)
-// 	.put(categoryController.updateOne);
-// //
+// Categories
+router
+	.route('/categories')
+	.get(wrapper(categoryController.getAll))
+	.post(
+		categoryController.validateProduct(),
+		wrapper(categoryController.createOne),
+	);
+router
+	.route('/categories/:id')
+	.get(wrapper(categoryController.getOne))
+	.delete(wrapper(categoryController.deleteOne))
+	.put(
+		categoryController.validateProduct(),
+		wrapper(categoryController.updateOne),
+	);
+//
 export default router;

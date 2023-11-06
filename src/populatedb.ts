@@ -1,8 +1,8 @@
 import { config } from 'dotenv';
-import db from './database';
 import { Product, ProductModel } from '@models/productModel';
 import mongoose from 'mongoose';
 import { Category, CategoryModel } from '@models/categoryModel';
+import db from './database';
 
 config();
 
