@@ -1,143 +1,104 @@
-import mongoose from 'mongoose';
-import async from 'async';
 import { config } from 'dotenv';
-import { Product, TProduct } from './models/product';
-import { Category, TCategory } from './models/category';
+import { Product, ProductModel } from '@models/productModel';
+import mongoose from 'mongoose';
+import { Category, CategoryModel } from '@models/categoryModel';
+import db from './database';
 
 config();
 
-const mongoDB = process.env.MONGO_URI!;
-mongoose.connect(mongoDB, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-} as mongoose.ConnectOptions);
+db.connect(process.env.MONGO_URI!);
 
-const db = mongoose.connection;
+const products: (Product & mongoose.Document)[] = [];
+const categories: (Category & mongoose.Document)[] = [];
 
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
-const products: TProduct[] = [];
-const categories: TCategory[] = [];
-
-const createProduct = (obj: TProduct, callback: mongoose.Callback) => {
-	const product = new Product(obj);
-	product.save(err => {
-		if (err) {
-			callback(err, null);
-			return;
-		}
+const createProduct = async (obj: Product) => {
+	const product = new ProductModel(obj);
+	try {
+		await product.save();
 		console.log(`New Product:${product}`);
 		products.push(product);
-		callback(null, product);
-	});
+	} catch (err) {
+		console.error(err);
+	}
 };
 
-const createCategory = (obj: TCategory, callback: mongoose.Callback) => {
-	const category = new Category(obj);
-	category.save(err => {
-		if (err) {
-			callback(err, null);
-			return;
-		}
+const createCategory = async (obj: Category) => {
+	const category = new CategoryModel(obj);
+	try {
+		await category.save();
 		console.log(`New Category:${category}`);
 		categories.push(category);
-		callback(null, category);
-	});
+	} catch (err) {
+		console.error(err);
+	}
 };
 
-const populateProducts = (
-	cb: async.AsyncResultArrayCallback<unknown, Error> | undefined
-) => {
-	async.series(
-		[
-			function (callback) {
-				createProduct(
-					{
-						name: 'productOne',
-						description: 'Some description...',
-						category: categories[0],
-						price: 4,
-						numberInStock: 5,
-					},
-					callback
-				);
-			},
-			function (callback) {
-				createProduct(
-					{
-						name: 'productTwo',
-						description: 'Some description...',
-						category: categories[0],
-						price: 3,
-						numberInStock: 3,
-					},
-					callback
-				);
-			},
-			function (callback) {
-				createProduct(
-					{
-						name: 'productThree',
-						description: 'Some description...',
-						category: categories[1],
-						price: 2,
-						numberInStock: 1,
-					},
-					callback
-				);
-			},
-			function (callback) {
-				createProduct(
-					{
-						name: 'productThree',
-						description: 'Some description...',
-						category: categories[2],
-						price: 8,
-						numberInStock: 7,
-					},
-					callback
-				);
-			},
-		],
-		cb
-	);
+const populateProducts = async () => {
+	const createProductPromises = [
+		await createProduct({
+			name: 'productOne',
+			description: 'Some description...',
+			category: categories[0]._id,
+			price: 4,
+			numberInStock: 5,
+		}),
+		await createProduct({
+			name: 'productTwo',
+			description: 'Some description...',
+			category: categories[0]._id,
+			price: 3,
+			numberInStock: 3,
+		}),
+		await createProduct({
+			name: 'productThree',
+			description: 'Some description...',
+			category: categories[1]._id,
+			price: 2,
+			numberInStock: 1,
+		}),
+		await createProduct({
+			name: 'productThree',
+			description: 'Some description...',
+			category: categories[2]._id,
+			price: 8,
+			numberInStock: 7,
+		}),
+	];
+
+	try {
+		await Promise.all(createProductPromises);
+	} catch (error) {
+		console.error('An error occurred:', error);
+	}
 };
 
-const populateCategories = (
-	cb: async.AsyncResultArrayCallback<unknown, Error> | undefined
-) => {
-	async.series(
-		[
-			function (callback) {
-				createCategory(
-					{
-						name: 'firstCategory',
-						description: 'Some description...',
-					},
-					callback
-				);
-			},
-			function (callback) {
-				createCategory(
-					{
-						name: 'secondCategory',
-						description: 'Some description...',
-					},
-					callback
-				);
-			},
-			function (callback) {
-				createCategory(
-					{
-						name: 'thirdCategory',
-						description: 'Some description...',
-					},
-					callback
-				);
-			},
-		],
-		cb
-	);
+const populateCategories = async () => {
+	const createCategoryPromises = [
+		await createCategory({
+			name: 'firstCategory',
+			description: 'Some description...',
+		}),
+
+		await createCategory({
+			name: 'secondCategory',
+			description: 'Some description...',
+		}),
+
+		await createCategory({
+			name: 'thirdCategory',
+			description: 'Some description...',
+		}),
+	];
+
+	try {
+		await Promise.all(createCategoryPromises);
+	} catch (error) {
+		console.error('An error occurred:', error);
+	}
 };
 
-async.series([populateCategories, populateProducts]);
+// To run promises sequentially, otherwise products won't be able to access categories
+[populateCategories, populateProducts].reduce(async (previous, current) => {
+	await previous;
+	return current();
+}, Promise.resolve());

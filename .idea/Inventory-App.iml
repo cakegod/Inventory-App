@@ -5,8 +5,15 @@
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/codeStyles" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/httpRequests" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/sonarlint" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="a600335f-1658-43d9-9d5b-e9bef98e6539" />
   </component>
 </module>

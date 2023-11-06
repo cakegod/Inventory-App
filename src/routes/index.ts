@@ -1,60 +1,76 @@
-import express from 'express';
-import categoryController from '../controllers/categoryController';
-import productController from '../controllers/productController';
+import { NextFunction, Request, Response, Router } from 'express';
+import { ProductModel } from '@models/productModel';
+import { CategoryModel } from '@models/categoryModel';
+import productController from '@controllers/productController';
+import categoryController from '@controllers/categoryController';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/', productController.displayHomepage);
+type Callback = (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) => Promise<void>;
 
-router.get('/products', productController.displayProductsList);
-router.get('/categories', categoryController.displayCategoriesList);
+// To not have to wrap every function
+function wrapper(cb: Callback) {
+	return async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await cb(req, res, next);
+		} catch (err) {
+			next(err);
+		}
+	};
+}
 
-// // Delete product
-// router
-// 	.route('/product/:id/delete')
-// 	.get(productController.deleteGetProduct)
-// 	.post(productController.deletePostProduct);
+router.get(
+	'/',
+	wrapper(async (req: Request, res: Response) => {
+		const [productsCount, categoriesCount] = await Promise.all([
+			ProductModel.countDocuments({}),
+			CategoryModel.countDocuments({}),
+		]);
 
-// Update product
+		res.render('index', {
+			title: 'Home',
+			data: { productsCount, categoriesCount },
+		});
+	}),
+);
+
+// // Products
 router
-	.route('/product/:id/update')
-	.get(productController.updateGetProduct)
-	.post(productController.updatePostProduct);
-
-// Create product
+	.route('/products')
+	.get(wrapper(productController.getAll))
+	.post(
+		productController.validateProduct(),
+		wrapper(productController.createOne),
+	);
 router
-	.route('/product/create')
-	.get(productController.createGetProduct)
-	.post(productController.createPostProduct);
+	.route('/products/:id')
+	.get(wrapper(productController.getOne))
+	.delete(wrapper(productController.deleteOne))
+	.put(
+		productController.validateProduct(),
+		wrapper(productController.updateOne),
+	);
+//
 
-// Read and delete product
+// Categories
 router
-	.route('/product/:id')
-	.get(productController.displayProductDetails)
-	.post(productController.deletePostProduct);
-
-// Delete category
-// router
-// 	.route('/category/:id/delete')
-// 	.get(categoryController.deleteGetCategory)
-// 	.post(categoryController.deletePostCategory);
-
-// Update category
+	.route('/categories')
+	.get(wrapper(categoryController.getAll))
+	.post(
+		categoryController.validateProduct(),
+		wrapper(categoryController.createOne),
+	);
 router
-	.route('/category/:id/update')
-	.get(categoryController.updateGetCategory)
-	.post(categoryController.updatePostCategory);
-
-// Create category
-router
-	.route('/category/create')
-	.get(categoryController.createGetCategory)
-	.post(categoryController.createPostCategory);
-
-// Read and delete category
-router
-	.route('/category/:id')
-	.get(categoryController.displayCategoryDetails)
-	.post(categoryController.deletePostCategory);
-
+	.route('/categories/:id')
+	.get(wrapper(categoryController.getOne))
+	.delete(wrapper(categoryController.deleteOne))
+	.put(
+		categoryController.validateProduct(),
+		wrapper(categoryController.updateOne),
+	);
+//
 export default router;
